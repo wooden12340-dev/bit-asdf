@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { GameSettings } from '../types/game';
 import { audioEngine } from '../utils/audioEngine';
+import { downloadPlanFile } from '../utils/planDocument';
 import {
   X,
   Volume2,
@@ -12,6 +13,8 @@ import {
   Sparkles,
   Zap,
   HelpCircle,
+  FileText,
+  Download,
 } from 'lucide-react';
 
 interface SettingsModalProps {
@@ -470,6 +473,38 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ settings, onSave, 
                     }
                     className="w-full accent-pink-400 cursor-pointer"
                   />
+                </div>
+
+                {/* Implementation Plan Specification Download */}
+                <div className="bg-slate-950/60 p-3 rounded-2xl border border-slate-800 flex items-center justify-between gap-3 mt-4">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-amber-400/10 flex items-center justify-center text-amber-400 shrink-0">
+                      <FileText className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-white">종합 구현 계획서</div>
+                      <div className="text-[10px] text-slate-400">3D UI · 13트랙 · 판정 기획 명세</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => downloadPlanFile('markdown')}
+                      className="px-2.5 py-1.5 rounded-xl bg-amber-400/20 hover:bg-amber-400/30 text-amber-300 text-xs font-bold transition-all flex items-center gap-1 active:scale-95 cursor-pointer border border-amber-400/30"
+                      title="마크다운 형식 다운로드"
+                    >
+                      <Download className="w-3 h-3" />
+                      <span>.MD</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => downloadPlanFile('txt')}
+                      className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-all active:scale-95 cursor-pointer border border-slate-700"
+                      title="텍스트 형식 다운로드"
+                    >
+                      <span>.TXT</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

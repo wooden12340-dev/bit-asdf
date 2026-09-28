@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { SongMetadata, GameSettings, DifficultyLevel } from '../types/game';
 import { audioEngine } from '../utils/audioEngine';
+import { PlanModal } from './PlanModal';
 import {
   Play,
   Sliders,
@@ -12,6 +13,8 @@ import {
   Music2,
   Clock,
   Skull,
+  FileText,
+  Download,
 } from 'lucide-react';
 
 interface SongSelectProps {
@@ -35,6 +38,7 @@ export const SongSelect: React.FC<SongSelectProps> = ({
 }) => {
   const [difficultyFilter, setDifficultyFilter] = useState<'ALL' | DifficultyLevel>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isPlanOpen, setIsPlanOpen] = useState(false);
 
   // Filter songs based on difficulty and search query
   const filteredSongs = useMemo(() => {
@@ -111,14 +115,28 @@ export const SongSelect: React.FC<SongSelectProps> = ({
           <p className="text-xs text-slate-400 mt-0.5">3D Perspective 4-Lane Rhythm Experience · 13 Tracks</p>
         </div>
 
-        <button
-          onClick={onOpenSettings}
-          className="p-2 sm:px-3 sm:py-2 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition-colors flex items-center gap-1.5 shadow-lg cursor-pointer"
-          aria-label="Settings"
-        >
-          <Sliders className="w-4 h-4 text-amber-400" />
-          <span className="text-xs font-bold hidden sm:inline">설정</span>
-        </button>
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          {/* Plan Download & View Button */}
+          <button
+            onClick={() => setIsPlanOpen(true)}
+            className="px-2.5 py-2 sm:px-3 rounded-2xl bg-amber-400/10 border border-amber-400/40 hover:bg-amber-400/20 text-amber-300 transition-all flex items-center gap-1.5 shadow-md active:scale-95 cursor-pointer"
+            title="구현 계획서 및 명세서 보기/다운로드"
+          >
+            <FileText className="w-4 h-4 text-amber-400" />
+            <span className="text-xs font-bold">계획서</span>
+            <Download className="w-3.5 h-3.5 text-amber-400/80 hidden sm:inline" />
+          </button>
+
+          {/* Settings Button */}
+          <button
+            onClick={onOpenSettings}
+            className="p-2 sm:px-3 sm:py-2 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition-colors flex items-center gap-1.5 shadow-lg cursor-pointer"
+            aria-label="Settings"
+          >
+            <Sliders className="w-4 h-4 text-amber-400" />
+            <span className="text-xs font-bold hidden sm:inline">설정</span>
+          </button>
+        </div>
       </header>
 
       {/* Control Modes Indicator Banner */}
@@ -278,6 +296,9 @@ export const SongSelect: React.FC<SongSelectProps> = ({
           <span>게임 시작 (GAME START)</span>
         </button>
       </div>
+
+      {/* Implementation Plan Specification Modal */}
+      {isPlanOpen && <PlanModal onClose={() => setIsPlanOpen(false)} />}
     </div>
   );
 };
