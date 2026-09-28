@@ -1,0 +1,6 @@
+{
+  "name": "Beat Smiles - Rhythm Game",
+  "description": "A charming 4-lane vertical rhythm game featuring animated smiling notes, precision judgment, neon glow effects, and catchy beat tracks.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
