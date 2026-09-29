@@ -39,6 +39,7 @@ export default function App() {
 
   const [lastStats, setLastStats] = useState<GameStats | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [playSessionKey, setPlaySessionKey] = useState(0);
 
   // Save settings on update
   const handleSaveSettings = (newSettings: GameSettings) => {
@@ -52,7 +53,9 @@ export default function App() {
 
   // Start game
   const handleStartGame = () => {
+    audioEngine.stopBgm();
     audioEngine.init();
+    setPlaySessionKey((k) => k + 1);
     setGameState('PLAYING');
   };
 
@@ -96,6 +99,7 @@ export default function App() {
 
       {gameState === 'PLAYING' && (
         <RhythmGame
+          key={playSessionKey}
           song={selectedSong}
           settings={settings}
           highScore={highScores[selectedSong.id] || 0}
@@ -110,9 +114,13 @@ export default function App() {
           stats={lastStats}
           song={selectedSong}
           onRetry={() => {
+            audioEngine.stopBgm();
+            audioEngine.init();
+            setPlaySessionKey((k) => k + 1);
             setGameState('PLAYING');
           }}
           onSongSelect={() => {
+            audioEngine.stopBgm();
             setGameState('SELECT');
           }}
         />

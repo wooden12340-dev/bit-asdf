@@ -68,6 +68,15 @@ export const RhythmGame: React.FC<RhythmGameProps> = ({
     audioEngine.setOffset(settings.audioOffset);
   }, [settings]);
 
+  // Clean stop audio on unmount
+  useEffect(() => {
+    return () => {
+      audioEngine.stopBgm();
+      isGameRunningRef.current = false;
+      if (animFrameIdRef.current) cancelAnimationFrame(animFrameIdRef.current);
+    };
+  }, []);
+
   // Initialize song notes & stats
   useEffect(() => {
     hasFinishedRef.current = false;
@@ -456,11 +465,53 @@ export const RhythmGame: React.FC<RhythmGameProps> = ({
     return () => clearTimeout(timer);
   }, [countdown, song, finishGame]);
 
+  const restartGame = useCallback(() => {
+    audioEngine.stopBgm();
+    hasFinishedRef.current = false;
+    isGameRunningRef.current = false;
+    isPausedRef.current = false;
+    setIsPaused(false);
+
+    // Reset notes to pristine state
+    notesRef.current = song.notes.map((n) => ({
+      ...n,
+      hit: false,
+      missed: false,
+      isHolding: false,
+      holdProgress: 0,
+    }));
+
+    // Reset synchronous stats
+    statsRef.current = {
+      score: 0,
+      combo: 0,
+      maxCombo: 0,
+      perfect: 0,
+      great: 0,
+      good: 0,
+      miss: 0,
+      health: 75,
+      accuracy: 100,
+    };
+    setStats({ ...statsRef.current });
+    setFever(0);
+    setIsFeverActive(false);
+
+    activeLanesRef.current = [false, false, false, false];
+    setActiveLanesDisplay([false, false, false, false]);
+    activeTouchesRef.current.clear();
+    recentJudgmentsRef.current = [];
+    effectsRef.current = [];
+
+    // Begin fresh 3..2..1 countdown
+    setCountdown(3);
+  }, [song]);
+
   const togglePause = () => {
     if (isPausedRef.current) {
       isPausedRef.current = false;
       setIsPaused(false);
-      audioEngine.init();
+      audioEngine.resumeBgm(song.id, song.bpm, song.duration, finishGame);
     } else {
       isPausedRef.current = true;
       setIsPaused(true);
@@ -1239,12 +1290,7 @@ export const RhythmGame: React.FC<RhythmGameProps> = ({
                 )}
 
                 <button
-                  onClick={() => {
-                    audioEngine.stopBgm();
-                    setIsPaused(false);
-                    isPausedRef.current = false;
-                    setCountdown(3);
-                  }}
+                  onClick={restartGame}
                   className="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-sm flex items-center justify-center gap-2 transition-all cursor-pointer"
                 >
                   <RotateCcw className="w-4 h-4" />
